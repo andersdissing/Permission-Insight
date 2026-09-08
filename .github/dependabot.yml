@@ -9,6 +9,17 @@ updates:
     groups:
       dev-dependencies:
         dependency-type: development
+    ignore:
+      # typescript-eslint 8.x declares a peer range of >=4.8.4 <6.1.0, so a
+      # major TypeScript bump fails `npm ci` with ERESOLVE before the build
+      # starts. Dependabot cannot see that and reopened the same broken pull
+      # request within seconds of the last one being closed.
+      #
+      # Ignoring the major only. Minor and patch TypeScript updates still come
+      # through, as does eslint, which is grouped with it here but has no such
+      # constraint. Lift this when typescript-eslint supports TypeScript 7.
+      - dependency-name: typescript
+        update-types: ['version-update:semver-major']
 
   - package-ecosystem: nuget
     directory: /api
