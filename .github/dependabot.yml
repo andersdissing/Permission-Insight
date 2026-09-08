@@ -15,6 +15,25 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    ignore:
+      # The Functions worker's Application Insights integration binds against
+      # Application Insights SDK 2.x. On 3.x the worker dies on load with a
+      # TypeLoadException on ITelemetryInitializer, the host recycles until it
+      # gives up, and every request returns 502.
+      #
+      # The build and the tests are clean either way, so CI cannot catch this
+      # and a green Dependabot PR is not evidence of anything. Ignored rather
+      # than closed repeatedly. See the comment beside the reference in
+      # PermissionInsight.Api.csproj.
+      - dependency-name: Microsoft.ApplicationInsights.WorkerService
+        update-types: ['version-update:semver-major']
+
+      # The application targets net9.0 and runs on the .NET 9 isolated worker.
+      # Moving runtime dependencies onto the .NET 10 package wave while the host
+      # stays on 9 is the same shape of risk as the entry above, and buys
+      # nothing. Take these together with a move to .NET 10.
+      - dependency-name: Microsoft.Extensions.*
+        update-types: ['version-update:semver-major']
 
   - package-ecosystem: github-actions
     directory: /
