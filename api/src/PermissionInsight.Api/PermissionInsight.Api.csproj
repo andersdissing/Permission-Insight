@@ -21,7 +21,7 @@
       gives up, and every request returns 502. The build is clean either way,
       so this only shows up in a deployed app.
     -->
-    <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.23.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="3.1.2" />
     <PackageReference Include="Azure.Identity" Version="1.21.0" />
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.22.0" />
     <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.22.0" />
