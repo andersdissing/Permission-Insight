@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+
+    <!--
+      Azure Storage static website hosting cannot set response headers at all,
+      so the policy is declared here instead.
+
+      This is a placeholder. scripts/deploy.ps1 replaces the whole tag at upload
+      time with the full policy, because it has to name the API origin and that
+      is a per-deployment value this file cannot know. The deployment fails if
+      the tag is not found, so an unprotected page cannot ship quietly.
+
+      What is left here is what holds even with no deployment step: the
+      application embeds no plugins and sets no <base>, so both are safe
+      unconditionally, and a developer running `npm run dev` still gets them.
+
+      frame-ancestors is absent by necessity — it is ignored in a meta tag.
+      main.tsx refuses to mount outside a top-level window instead.
+      See docs/adr/0016.
+    -->
+    <meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'self'" />
+
+    <!-- Stands in for the Referrer-Policy header the platform cannot send.
+         Outbound links to SharePoint and Entra already carry rel="noreferrer";
+         this covers everything else, so a site URL never rides along. -->
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+    <title>Permission insight</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

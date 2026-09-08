@@ -1,0 +1,17 @@
+// Copy to main.bicepparam and fill in. The real file is gitignored: every
+// value below is tenant specific and must not reach a public repository.
+using './main.bicep'
+
+// Must sit under a domain the tenant has already verified.
+// {tenant}.onmicrosoft.com is verified in every tenant, so this always works.
+param apiIdentifierUri = 'api://REPLACE.onmicrosoft.com/permission-insight'
+
+param sharePointRootUrl = 'https://REPLACE.sharepoint.com'
+
+// az ad signed-in-user show --query id -o tsv
+param deployerPrincipalId = ''
+
+// param location = 'westeurope'
+// param namePrefix = 'perminsight'
+// param usersGroupDisplayName = 'sg-permission-insight-users'
+// param auditRetentionDays = 365

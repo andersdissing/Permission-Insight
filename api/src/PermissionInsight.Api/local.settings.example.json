@@ -1,0 +1,17 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+    "AZURE_FUNCTIONS_ENVIRONMENT": "Development",
+
+    "TenantId": "00000000-0000-0000-0000-000000000000",
+    "ApiClientId": "00000000-0000-0000-0000-000000000000",
+    "ApiIdentifierUri": "api://yourtenant.onmicrosoft.com/permission-insight",
+    "SharePointRootUrl": "https://yourtenant.sharepoint.com"
+  },
+  "Host": {
+    "CORS": "http://localhost:5173",
+    "CORSCredentials": false
+  }
+}

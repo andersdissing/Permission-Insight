@@ -1,0 +1,38 @@
+# Exports. An export is a complete index of an organisation's most exposed
+# documents. Nothing of this shape may ever reach a public repository.
+*.csv
+*.xlsx
+exports/
+out/
+
+# Runtime configuration written by scripts/deploy.ps1 from deployment outputs.
+# Holds the tenant id, the client id and the API URL.
+web/public/config.json
+web/dist/config.json
+*.bicepparam
+!*.bicepparam.example
+.env
+.env.*
+!.env.example
+
+# Local Azure Functions settings.
+api/**/local.settings.json
+
+# .NET
+bin/
+obj/
+*.user
+TestResults/
+
+# Node
+node_modules/
+dist/
+.vite/
+*.tsbuildinfo
+npm-debug.log*
+
+# Editors and OS
+.vs/
+.idea/
+.DS_Store
+Thumbs.db

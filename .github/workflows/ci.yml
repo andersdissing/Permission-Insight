@@ -1,0 +1,111 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - run: dotnet restore api/PermissionInsight.sln
+
+      - run: dotnet build api/PermissionInsight.sln --configuration Release --no-restore
+
+      # The role-claim gate is the access control model, so it is the first
+      # thing that has to still pass.
+      - run: dotnet test api/PermissionInsight.sln --configuration Release --no-build --logger "console;verbosity=normal"
+
+  frontend:
+    name: Front end
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - run: npm ci
+
+      - run: npm run lint
+
+      # Export correctness, which fails silently and reaches someone who never
+      # saw the screen.
+      - run: npm test
+
+      - run: npm run build
+
+  infrastructure:
+    name: Infrastructure
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: az bicep install
+
+      # Warnings are errors here. A Bicep warning in this template is usually
+      # a null that would fail at deployment time instead.
+      - name: Compile templates
+        run: |
+          set -euo pipefail
+          for template in infra/main.bicep infra/app-roles.bicep; do
+            echo "::group::$template"
+            output=$(az bicep build --file "$template" --stdout 2>&1 >/dev/null || true)
+            echo "$output"
+            echo "::endgroup::"
+            if [ -n "$output" ]; then
+              echo "::error file=$template::Bicep reported diagnostics"
+              exit 1
+            fi
+          done
+
+  what-if:
+    name: What-if
+    runs-on: ubuntu-latest
+    # A Bicep change that would alter permissions should be visible in the pull
+    # request rather than discovered at deployment. Skipped on forks and on
+    # repositories that have not configured a test subscription.
+    if: vars.AZURE_CLIENT_ID != ''
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      # Federated credential, so there is no secret in CI either, for the same
+      # reason there is none in the application.
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: What-if against the test subscription
+        run: |
+          az deployment group what-if \
+            --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}" \
+            --template-file infra/main.bicep \
+            --parameters \
+              apiIdentifierUri="${{ vars.API_IDENTIFIER_URI }}" \
+              sharePointRootUrl="${{ vars.SHAREPOINT_ROOT_URL }}"
