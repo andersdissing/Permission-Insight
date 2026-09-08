@@ -95,7 +95,7 @@ jobs:
 
       # Federated credential, so there is no secret in CI either, for the same
       # reason there is none in the application.
-      - uses: azure/login@v2
+      - uses: azure/login@v3
         with:
           client-id: ${{ vars.AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
