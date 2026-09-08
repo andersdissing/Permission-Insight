@@ -45,6 +45,22 @@ results stay in the user's browser.
 
 Enable GitHub secret scanning and push protection. The point is not that secrets
 are expected, but that their absence should be enforced rather than assumed.
+Both are free on a public repository and are on by default; Dependabot alerts
+and security updates are not, and have to be turned on.
+
+**Scanning for non-provider patterns is not available here.** Provider patterns
+— a real Azure key, a GitHub token — are matched by the free tier. Generic
+secrets, which is to say private keys, connection strings and passwords that
+match no vendor's format, need GitHub Secret Protection or Advanced Security,
+and neither is free on a personal account. The REST API accepts a request to
+enable it, returns 200, and leaves the setting off, so do not read the absence
+of an error as success.
+
+That gap matters more here than it would elsewhere, because the thing this
+repository must never contain is precisely a generic secret. Until it is
+closed, the controls that stand in for it are the rule above, the review
+checklist in `CONTRIBUTING.md`, and the fact that the architecture has no
+credential to leak in the first place.
 
 Every Bicep parameter that could carry tenant-specific data has no default
 value, so a deployment fails rather than silently targeting whatever the author
